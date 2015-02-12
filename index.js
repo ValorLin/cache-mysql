@@ -25,7 +25,7 @@ module.exports = function (connection, opts) {
     var realQuery, expire, cacheDir;
 
     expire = opts.expire || '1 hour';
-    cacheDir = opts.cache_dir || '/cache';
+    cacheDir = opts.cache_dir || 'cache';
 
     realQuery = connection.query;
     connection.query = function (sql, values, callback) {
