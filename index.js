@@ -44,7 +44,6 @@ module.exports = function (connection, opts) {
             // hit
             var arr = fs.readFileSync(cacheFilePath).toString().split('|');
             result = arr[0];
-            console.log(JSON.parse(arr[1]));
             callback(null, JSON.parse(result), JSON.parse(arr[1]));
 
         } else {
@@ -52,8 +51,6 @@ module.exports = function (connection, opts) {
 
             // execute the real query
             return realQuery.apply(connection, [sql, values, function (err, result, fields) {
-                console.log(arguments);
-
                 callback.apply(this, arguments);
 
                 if (err) return;
@@ -63,7 +60,6 @@ module.exports = function (connection, opts) {
                 }
 
                 // cache the result
-                console.log(result);
                 fs.writeFile(cacheFilePath, JSON.stringify(result) + '|' + JSON.stringify(fields));
             }]);
         }
