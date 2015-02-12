@@ -29,7 +29,7 @@ module.exports = function (connection, opts) {
 
     realQuery = connection.query;
     connection.query = function (sql, values, callback) {
-        var key, cacheFileName, cacheFilePath, result;
+        var key, cacheFileName, cacheFilePath, cache;
 
         if (typeof values === 'function') {
             callback = values;
@@ -42,15 +42,14 @@ module.exports = function (connection, opts) {
 
         if (isCacheAvailable(cacheFilePath, expire)) {
             // hit
-            var arr = fs.readFileSync(cacheFilePath).toString().split('|');
-            result = arr[0];
-            callback(null, JSON.parse(result), JSON.parse(arr[1]));
+            cache = JSON.parse(fs.readFileSync(cacheFilePath).toString());
+            callback(null, cache.rows, cache.fields);
 
         } else {
             // no hit
 
             // execute the real query
-            return realQuery.apply(connection, [sql, values, function (err, result, fields) {
+            return realQuery.apply(connection, [sql, values, function (err, rows, fields) {
                 callback.apply(this, arguments);
 
                 if (err) return;
@@ -60,7 +59,10 @@ module.exports = function (connection, opts) {
                 }
 
                 // cache the result
-                fs.writeFile(cacheFilePath, JSON.stringify(result) + '|' + JSON.stringify(fields));
+                fs.writeFile(cacheFilePath, JSON.stringify({
+                    rows: rows,
+                    fields: fields
+                }));
             }]);
         }
     };
