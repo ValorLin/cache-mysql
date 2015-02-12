@@ -42,22 +42,29 @@ module.exports = function (connection, opts) {
 
         if (isCacheAvailable(cacheFilePath, expire)) {
             // hit
-            result = fs.readFileSync(cacheFilePath);
-            callback(null, JSON.parse(result));
+            var arr = fs.readFileSync(cacheFilePath).toString().split('|');
+            result = arr[0];
+            console.log(JSON.parse(arr[1]));
+            callback(null, JSON.parse(result), JSON.parse(arr[1]));
 
         } else {
             // no hit
 
             // execute the real query
-            return realQuery.apply(connection, [sql, values, function (err, result) {
+            return realQuery.apply(connection, [sql, values, function (err, result, fields) {
+                console.log(arguments);
+
                 callback.apply(this, arguments);
+
+                if (err) return;
 
                 if (!fs.existsSync(cacheDir)) {
                     fs.mkdirSync(cacheDir);
                 }
 
                 // cache the result
-                fs.writeFile(cacheFilePath, JSON.stringify([result]));
+                console.log(result);
+                fs.writeFile(cacheFilePath, JSON.stringify(result) + '|' + JSON.stringify(fields));
             }]);
         }
     };
