@@ -31,7 +31,12 @@ module.exports = function (connection, opts) {
     connection.query = function (sql, values, callback) {
         var key, cacheFileName, cacheFilePath, result;
 
-        key = sql + JSON.stringify(values);
+        if (typeof values === 'function') {
+            callback = values;
+            values = [];
+        }
+
+        key = JSON.stringify(sql) + JSON.stringify(values);
         cacheFileName = crypto.createHash('sha1').update(key).digest('hex');
         cacheFilePath = path.join(cacheDir, cacheFileName);
 
