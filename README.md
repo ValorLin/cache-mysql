@@ -1,6 +1,9 @@
 # cache-mysql
 Cache mysql queries, it's useful for slow query and it's very easy to use.
 
+## Installation
+`npm install cofy-mysql --save`
+
 ## Basic Usage
 ```js
 var mysql = require('mysql');
