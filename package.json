@@ -1,6 +1,6 @@
 {
   "name": "cache-mysql",
-  "version": "0.3.5",
+  "version": "0.3.7",
   "description": "Cache mysql queries, it's useful for slow query and it's very easy to use.",
   "main": "index.js",
   "scripts": {
@@ -25,5 +25,8 @@
     "cache-mysql",
     "mysql-cache"
   ],
-  "author": "weilao <qqq123026689@126.com> (https://github.com/weilao)"
+  "author": "weilao <qqq123026689@126.com> (https://github.com/weilao)",
+  "dependencies": {
+    "moment": "^2.9.0"
+  }
 }
