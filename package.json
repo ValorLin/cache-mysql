@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://gitbub.com/weilao/cache-mysql.git"
+    "url": "git://github.com/weilao/cache-mysql.git"
   },
   "bugs": {
     "url": "https://github.com/weilao/cache-mysql/issues"
