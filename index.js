@@ -62,7 +62,7 @@ module.exports = function (connection, opts) {
                 fs.writeFile(cacheFilePath, JSON.stringify({
                     rows: rows,
                     fields: fields
-                }));
+                }), err => {});
             }]);
         }
     };
