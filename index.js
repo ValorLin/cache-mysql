@@ -10,10 +10,11 @@ var moment = require('moment');
  * @param expire
  * @returns {boolean}
  */
-function isCacheAvailable(cachedFilePath, expire) {
+function isCacheAvailable(cachedFilePath, expire) 
+{
     var cacheModifiedTime, arr;
 
-    if (!fs.existsSync(cachedFilePath)) return false;
+    if(!fs.existsSync(cachedFilePath)) return false;
 
     cacheModifiedTime = moment(fs.statSync(cachedFilePath).mtime);
 
@@ -21,17 +22,21 @@ function isCacheAvailable(cachedFilePath, expire) {
     return cacheModifiedTime.add(arr[0], arr[1]) > moment();
 }
 
-module.exports = function (connection, opts) {
+module.exports = (connection, opts) =>
+{
     var realQuery, expire, cacheDir;
 
     expire = opts.expire || '1 hour';
     cacheDir = opts.cache_dir || 'cache';
 
     realQuery = connection.query;
-    connection.query = function (sql, values, callback) {
+    
+    connection.query = (sql, values, callback, cacheInThisQuery = true) =>
+    {
         var key, cacheFileName, cacheFilePath, cache;
 
-        if (typeof values === 'function') {
+        if(typeof values === 'function')
+        {
             callback = values;
             values = [];
         }
@@ -40,12 +45,12 @@ module.exports = function (connection, opts) {
         cacheFileName = crypto.createHash('sha1').update(key).digest('hex');
         cacheFilePath = path.join(cacheDir, cacheFileName);
 
-        if (isCacheAvailable(cacheFilePath, expire)) {
+        if(cacheInThisQuery && isCacheAvailable(cacheFilePath, expire)) 
+        {
             // hit
             cache = JSON.parse(fs.readFileSync(cacheFilePath).toString());
             callback(null, cache.rows, cache.fields);
-
-        } else {
+        }else{
             // no hit
 
             // execute the real query
@@ -54,17 +59,16 @@ module.exports = function (connection, opts) {
 
                 if (err) return;
 
-                if (!fs.existsSync(cacheDir)) {
-                    fs.mkdirSync(cacheDir);
-                }
+                if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
 
                 // cache the result
                 fs.writeFile(cacheFilePath, JSON.stringify({
                     rows: rows,
                     fields: fields
-                }));
+                }), err => {});
             }]);
         }
     };
+    
     return connection;
 };
